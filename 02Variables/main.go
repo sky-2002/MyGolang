@@ -7,7 +7,7 @@ const LoginToken string = "asfafsdfsd545645asd" // public
 func main() {
 	var username string = "Aakash"
 	fmt.Println(username)
-	fmt.Printf("Variable is of type: %T \n", username)
+	fmt.Printf("Variable is of type: %T \n", username) // %T is for type, %v for values
 
 	var isLoggedIn bool = true
 	fmt.Println(isLoggedIn)
