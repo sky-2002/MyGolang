@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
 func main() {
 	fmt.Println("Welcome to web server in go")
 	// PerformGetRequest()
-	PerformPostJSONRequest()
+	// PerformPostJSONRequest()
+	PerformFormRequest()
 }
 
 func PerformGetRequest() {
@@ -53,5 +55,23 @@ func PerformPostJSONRequest() {
 
 	content, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println(string(content))
+}
 
+func PerformFormRequest() {
+	const myurl string = "http://localhost:8000/postform" // we can also give this as a parameter to the function
+
+	// form data
+	data := url.Values{}
+	data.Add("firstname", "aakash")
+	data.Add("lastname", "thatte")
+	data.Add("email", "at@go.com")
+
+	resp, err := http.PostForm(myurl, data)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	content, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(content))
 }
