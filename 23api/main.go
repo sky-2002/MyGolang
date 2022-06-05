@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -15,7 +16,7 @@ import (
 type Course struct {
 	CourseID    string  `json:"courseid"`
 	CourseName  string  `json:"coursename"`
-	CoursePrice string  `json:"price"`
+	CoursePrice int     `json:"price"`
 	Author      *Author `json:"author"` // keeping Author a pointer
 }
 
@@ -36,6 +37,27 @@ func (c *Course) IsEmpty() bool {
 func main() {
 	// we will build an api, say to deal with courses for a website.
 
+	fmt.Println("Handling APIs in Golang")
+
+	r := mux.NewRouter()
+
+	// seeding
+	courses = append(courses, Course{CourseID: "2", CourseName: "ReactJS", CoursePrice: 100, Author: &Author{FullName: "James bond", Website: "jb.com"}})
+	courses = append(courses, Course{CourseID: "4", CourseName: "MERN", CoursePrice: 199, Author: &Author{FullName: "James bond", Website: "mernjb.com"}})
+	courses = append(courses, Course{CourseID: "5", CourseName: "Python", CoursePrice: 499, Author: &Author{FullName: "Sky", Website: "sky.com/Py"}})
+	courses = append(courses, Course{CourseID: "17", CourseName: "Golang", CoursePrice: 499, Author: &Author{FullName: "Sky", Website: "sky.com/Go"}})
+	courses = append(courses, Course{CourseID: "20", CourseName: "JS", CoursePrice: 150, Author: &Author{FullName: "Sky", Website: "jb.com/JS"}})
+
+	// routing
+	r.HandleFunc("/", serveHome).Methods("GET")
+	r.HandleFunc("/courses", getAllCourses).Methods("GET")
+	r.HandleFunc("/course/{id}", getOneCourse).Methods("GET") // if we call id as course_id, make changes in function
+	r.HandleFunc("/course", createOneCourse).Methods("POST")
+	r.HandleFunc("/course/{id}", updateOneCourse).Methods("PUT")
+	r.HandleFunc("/course/{id}", deleteOneCourse).Methods("DELETE")
+
+	// listen to a port
+	log.Fatal(http.ListenAndServe(":4000", r))
 }
 
 // controllers - file
@@ -86,6 +108,9 @@ func createOneCourse(w http.ResponseWriter, r *http.Request) {
 	if course.IsEmpty() {
 		json.NewEncoder(w).Encode("No data in json")
 	}
+
+	// TODO: check only if title is duplicate, or maybe we can check if author is also duplicate
+	// further we can check for price and do something if all match to an existing course
 
 	// generate random course id, string
 	rand.Seed(time.Now().Unix())
