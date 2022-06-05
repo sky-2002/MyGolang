@@ -1,0 +1,3 @@
+JSON marshalling in go is converting go objects in json.
+Marshalling converts to bytes from type.
+Unmarshalling converts to type from bytes.
