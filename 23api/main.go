@@ -69,6 +69,8 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func getAllCourses(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Get all courses")
+	// http header contains metadata about the request or response,
+	// specifies media format too
 	w.Header().Set("Content-type", "application/json")
 
 	json.NewEncoder(w).Encode(courses)
