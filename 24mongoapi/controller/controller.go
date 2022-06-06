@@ -2,8 +2,10 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/sky-2002/mongoapi/model"
 	"go.mongodb.org/mongo-driver/bson"
@@ -110,4 +112,12 @@ func getAllMovies() []primitive.M {
 		movies = append(movies, movie)
 	}
 	return movies
+}
+
+// controllers
+func GetAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form--urlencode")
+	allMovies := getAllMovies()
+
+	json.NewEncoder(w).Encode(allMovies)
 }
