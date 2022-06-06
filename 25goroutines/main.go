@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
-	"time"
 )
 
-var WG sync.WaitGroup
+var signals = []string{"test"}
+
+var WG sync.WaitGroup // pointer
+var mut sync.Mutex    // pointer
 
 func main() {
 	// goroutine is created by simply adding a keyword go before the statement
@@ -22,24 +24,26 @@ func main() {
 		"https://github.com",
 	}
 
-	t1 := time.Now()
-	// without wait groups
-	for _, v := range websites {
-		getStatusCodeSimple(v)
-	}
-	t2 := time.Now()
-	fmt.Println("Time:", t2.Sub(t1)) // this prints out 4.112 secongs
-	fmt.Println("------------------")
+	// t1 := time.Now()
+	// // without wait groups
+	// for _, v := range websites {
+	// 	getStatusCodeSimple(v)
+	// }
+	// t2 := time.Now()
+	// fmt.Println("Time:", t2.Sub(t1)) // this prints out 4.112 secongs
+	// fmt.Println("------------------")
 
-	t1 = time.Now()
+	// t1 = time.Now()
 	// with wait groups
 	for _, v := range websites {
 		go getStatusCode(v)
 		WG.Add(1)
 	}
 	WG.Wait() // this will not let the main method finish till all wait groups give it the signal to go ahead
-	t2 = time.Now()
-	fmt.Println("Time:", t2.Sub(t1)) // And this prints out 675.33 miliseconds, much faster
+	// t2 = time.Now()
+	// fmt.Println("Time:", t2.Sub(t1)) // And this prints out 675.33 miliseconds, much faster
+
+	fmt.Println(signals)
 }
 
 // func greeting(s string) {
@@ -56,17 +60,24 @@ func getStatusCode(endpoint string) {
 	result, err := http.Get(endpoint)
 	if err != nil {
 		fmt.Println("Oops ! Error with endpoint")
+	} else {
+
+		// we lock it, make changes in memory, we unlock it
+		mut.Lock()
+		signals = append(signals, endpoint)
+		mut.Unlock()
+
+		fmt.Printf("%d status code for %s\n", result.StatusCode, endpoint)
 	}
-	fmt.Printf("%d status code for %s\n", result.StatusCode, endpoint)
 }
 
-func getStatusCodeSimple(endpoint string) {
+// func getStatusCodeSimple(endpoint string) {
 
-	// defer WG.Done() // wait group sends done message at the end of this function
+// 	// defer WG.Done() // wait group sends done message at the end of this function
 
-	result, err := http.Get(endpoint)
-	if err != nil {
-		fmt.Println("Oops ! Error with endpoint")
-	}
-	fmt.Printf("%d status code for %s\n", result.StatusCode, endpoint)
-}
+// 	result, err := http.Get(endpoint)
+// 	if err != nil {
+// 		fmt.Println("Oops ! Error with endpoint")
+// 	}
+// 	fmt.Printf("%d status code for %s\n", result.StatusCode, endpoint)
+// }
