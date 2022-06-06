@@ -16,7 +16,7 @@ import (
 )
 
 // usually these should go in env variables
-const connectionString = "mongodb+srv://sky-2002:mymonGo@cluster0.yrvzlzq.mongodb.net/?retryWrites=true&w=majority"
+const connectionString = "---connection--url--of--your--mongoDB--database---"
 
 const dbName = "netflix"
 const colName = "watchlist"
