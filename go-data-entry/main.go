@@ -3,13 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"image/color"
 	"io/ioutil"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -17,6 +20,7 @@ func main() {
 	fmt.Println("Welcome to data entry app in Golang")
 
 	myApp := app.New()
+	myApp.Settings().SetTheme(theme.DarkTheme()) // sets a dark theme for the app
 	myWindow := myApp.NewWindow("List Data")
 
 	loadedData := loadJsonData()
@@ -99,7 +103,8 @@ func main() {
 		myWindow.Close()
 	})
 
-	myWindow.SetContent(container.NewBorder(nil, container.New(layout.NewVBoxLayout(), add, exit), nil, nil, list))
+	// myWindow.SetContent(container.NewBorder(nil, container.New(layout.NewVBoxLayout(), add, exit), nil, nil, list))
+	myWindow.SetContent(container.NewBorder(nil, container.New(layout.NewVBoxLayout(), red_button(add), exit), nil, nil, list))
 	myWindow.Resize(fyne.NewSize(400, 600))
 	myWindow.SetMaster()
 	myWindow.CenterOnScreen()
@@ -122,5 +127,22 @@ func saveJsonData(data binding.StringList) {
 	d, _ := data.Get()
 	jsonData, _ := json.Marshal(d)
 	ioutil.WriteFile("data.json", jsonData, 0644)
+}
 
+func red_button(btn *widget.Button) *fyne.Container { // return type
+	// btn := widget.NewButton("Visit", nil) // button widget
+	// button color
+	btn_color := canvas.NewRectangle(
+		color.NRGBA{R: 255, G: 102, B: 102, A: 255})
+	// container for colored button
+	container1 := container.New(
+		// layout of container
+		layout.NewMaxLayout(),
+		// first use btn color
+		btn_color,
+		// 2nd btn widget
+		btn,
+	)
+	// our button is ready
+	return container1
 }
