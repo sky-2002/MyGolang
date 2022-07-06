@@ -9,13 +9,15 @@ import (
 )
 
 func main() {
-	servers := []servers.Server{
+	my_servers := []servers.Server{
 		servers.NewSimpleServer("https://www.google.com"),
 		servers.NewSimpleServer("https://www.bing.com"),
 		servers.NewSimpleServer("https://www.duckduckgo.com"),
 	}
 
-	lb := loadbalancer.NewLoadBalancer("8080", servers)
+	lb := loadbalancer.NewLoadBalancer("8080", my_servers)
+	lb.AddSimpleServer("https://www.facebook.com")
+	fmt.Println("New server added")
 
 	handleRedirect := func(rw http.ResponseWriter, req *http.Request) {
 		lb.ServeProxy(rw, req)
