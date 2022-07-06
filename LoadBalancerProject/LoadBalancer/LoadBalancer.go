@@ -10,24 +10,24 @@ import (
 type LoadBalancer struct {
 	Port            string
 	roundRobinCount int
-	Servers         []servers.Server
+	AllServers      []servers.Server
 }
 
 func NewLoadBalancer(port string, servers []servers.Server) *LoadBalancer {
 	return &LoadBalancer{
 		Port:            port,
 		roundRobinCount: 0,
-		Servers:         servers,
+		AllServers:      servers,
 	}
 }
 
 // getNextServerAddr returns the address of the next available server to send a
 // request to, using a simple round-robin algorithm
 func (lb *LoadBalancer) getNextAvailableServer() servers.Server {
-	server := lb.Servers[lb.roundRobinCount%len(lb.Servers)]
+	server := lb.AllServers[lb.roundRobinCount%len(lb.AllServers)]
 	for !server.IsAlive() {
 		lb.roundRobinCount++
-		server = lb.Servers[lb.roundRobinCount%len(lb.Servers)]
+		server = lb.AllServers[lb.roundRobinCount%len(lb.AllServers)]
 	}
 	lb.roundRobinCount++
 
@@ -42,4 +42,8 @@ func (lb *LoadBalancer) ServeProxy(rw http.ResponseWriter, req *http.Request) {
 
 	// could delete pre-existing X-Forwarded-For header to prevent IP spoofing
 	targetServer.Serve(rw, req)
+}
+
+func (lb *LoadBalancer) AddSimpleServer(addr string) {
+	lb.AllServers = append(lb.AllServers, servers.NewSimpleServer(addr))
 }
