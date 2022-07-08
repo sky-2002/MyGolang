@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// register a proxy handler to handle all requests
-	http.HandleFunc("/", handleRedirect)
+	http.HandleFunc("/c", handleRedirect) // as this address does not exist, you can see that sites change at each reload
 
 	fmt.Printf("serving requests at 'localhost:%s'\n", lb.Port)
 	http.ListenAndServe(":"+lb.Port, nil)
